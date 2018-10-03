@@ -69,3 +69,11 @@ output.json
 obj/
 
 .externalNativeBuild
+
+# Other
+.classpath
+.project
+.settings
+target
+/bin/
+/target/

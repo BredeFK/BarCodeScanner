@@ -21,10 +21,6 @@ public class Product {
     private String unit;
     private Bitmap image;
 
-    public Product() {
-
-    }
-
     private static Bitmap getBitmapFromURL(String src) {
         try {
             URL url = new URL(src);
@@ -41,7 +37,7 @@ public class Product {
 
     @Override
     public String toString() {
-        return String.format(Locale.getDefault(), "Store: %s\nID: %d\nName: %s\nSubName: %s\nCategory: %s\nPrice: kr %s\nPrice per unit: %s", store, id, title, subTitle, categoryName, getPricePlusRecycle(), getCompareUnitPriceWithUnit());
+        return String.format(Locale.getDefault(), "Store: %s%nID: %d%nName: %s%nSubName: %s%nCategory: %s%nPrice: kr %s%nPrice per unit: %s", store, id, title, subTitle, categoryName, getPricePlusRecycle(), getCompareUnitPriceWithUnit());
     }
 
     public long getId() {

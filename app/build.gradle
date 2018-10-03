@@ -1,4 +1,17 @@
 apply plugin: 'com.android.application'
+apply plugin: 'org.sonarqube'
+
+sonarqube {
+    properties {
+        property "sonar.projectName", "MyProject"
+        property "sonar.projectKey", "no.fritjof.barcodescanner"
+        property "sonar.host.url", "http://localhost:9000"
+        property "sonar.language", "java"
+        property "sonar.sources", "src/main/"
+        property "sonar.login", "admin"
+        property "sonar.password", "admin"
+    }
+}
 
 android {
     compileSdkVersion 27
