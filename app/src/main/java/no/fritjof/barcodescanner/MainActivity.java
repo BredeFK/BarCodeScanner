@@ -2,10 +2,14 @@ package no.fritjof.barcodescanner;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.StrictMode;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.SparseArray;
 import android.view.View;
@@ -24,21 +28,25 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int REQUEST_LOW_QUALITY_IMAGE = 1;
-    private static final int REQUEST_HIGH_QUALITY_IMAGE = 2;
+    private static final int REQUEST_LOW_QUALITY_IMAGE = 2;
+    private static final int REQUEST_HIGH_QUALITY_IMAGE = 1;
     private static final int NUMBER_OF_STORES = 1;
     private ImageView imageView;
     private TextView resultView;
     private EditText editText;
     private Store[] stores;
     private Uri imageUri = null;
+    private String currentPhotoPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Create new store Spar
         stores[0] = new Store("Spar");
-        stores[0].setImageURL("https://res.cloudinary.com/norgesgruppen/image/upload/b_white,c_pad,f_auto,h_584,q_50,w_584/");
+        stores[0].setImageURL("https://res.cloudinary.com/norgesgruppen/image/upload/b_white,c_pad,f_auto,h_400,q_50,w_400/");
         stores[0].setSearchURL("https://nettbutikk.spar.no/api/products/search?numberofhitsfortype=products&numberofhitsfortype=recipes&page=1&perpage=20&query=");
         stores[0].setItemURL("https://spar.no/nettbutikk");
 
@@ -70,31 +78,7 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!editText.getText().toString().isEmpty()) {
-                    Product[] products = parseJSONtoProducts(stores[0], editText.getText().toString());
-
-                    if (products != null) {
-                        if (products.length == 1) {
-                            resultView.setText(products[0].toString());
-                            imageView.setImageBitmap(products[0].getImage());
-                        } else if (products.length > 1) {
-                            // Display list in Product_List activity
-                            Intent intent = new Intent(MainActivity.this, Product_List.class);
-                            Bundle bundle = new Bundle();
-                            bundle.putInt("products_length", products.length);
-                            for(int i = 0; i < products.length; i++){
-                                bundle.putParcelable("products" + i, products[i]);
-                            }
-
-                            intent.putExtras(bundle);
-                            startActivity(intent);
-
-                        } else {
-                            Toast.makeText(MainActivity.this, "Could not find any products", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }
+                searchStoresForProducts(stores[0], editText.getText().toString());
             }
         });
 
@@ -107,8 +91,52 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void searchStoresForProducts(Store store, String barcode){
+        if (!barcode.isEmpty()) {
+            Product[] products = parseJSONtoProducts(store, barcode);
+
+            if (products != null) {
+                if (products.length == 1) {
+                    resultView.setText(products[0].toString());
+                    imageView.setImageBitmap(products[0].getImage());
+                } else if (products.length > 1) {
+                    // Display list in Product_List activity
+                    Intent intent = new Intent(MainActivity.this, Product_List.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("products_length", products.length);
+                    for (int i = 0; i < products.length; i++) {
+                        bundle.putParcelable("products" + i, products[i]);
+                    }
+
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+
+                } else {
+                    Toast.makeText(MainActivity.this, "Could not find any products", Toast.LENGTH_LONG).show();
+                }
+
+            }
+        }
+    }
+
     private void highQualityImage() {
-        System.out.println("Snart");
+        Intent hqIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        if (hqIntent.resolveActivity(getPackageManager()) != null) {
+            File file = null;
+            try {
+                file = createImageFile();
+            } catch (IOException e) {
+                e.getStackTrace();
+            }
+            if (file != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "no.fritjof.android.fileprovider",
+                        file);
+                hqIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(hqIntent, REQUEST_HIGH_QUALITY_IMAGE);
+            }
+        }
     }
 
 
@@ -119,12 +147,58 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_LOW_QUALITY_IMAGE && resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_LOW_QUALITY_IMAGE:
 
+                    break;
+                case REQUEST_HIGH_QUALITY_IMAGE:
+                    String barcode = getRawValueFromBarcode(getPicture());
+                    searchStoresForProducts(stores[0], barcode);
+                    break;
+                default:
+                    break;
+            }
         }
+
     }
+
+    private Bitmap getPicture() {
+        int targetWidth = imageView.getWidth();
+        int targetHeight = imageView.getHeight();
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(currentPhotoPath, options);
+        int photoWidth = options.outWidth;
+        int photoHeight = options.outHeight;
+
+        int scale = Math.min(photoWidth / targetWidth, photoHeight / targetHeight);
+
+        options.inJustDecodeBounds = false;
+        options.inSampleSize = scale;
+
+        return BitmapFactory.decodeFile(currentPhotoPath, options);
+    }
+
 
     private String getRawValueFromBarcode(Bitmap image) {
         BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(this).build();

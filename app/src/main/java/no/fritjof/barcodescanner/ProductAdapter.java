@@ -33,6 +33,7 @@ public class ProductAdapter extends ArrayAdapter<Product> {
             throw new NullPointerException();
         }
 
+        // TODO : Use AsyncTask here [https://developer.android.com/training/improving-layouts/smooth-scrolling#java]
         convertView = this.activity.getLayoutInflater().inflate(R.layout.product_view, container, false);
         ImageView product_image = convertView.findViewById(R.id.product_image);
         TextView product_title = convertView.findViewById(R.id.product_title);
@@ -46,6 +47,7 @@ public class ProductAdapter extends ArrayAdapter<Product> {
         product_subtitle.setText(productRow.getSubTitle());
         product_price.setText(String.format("Kr %s", productRow.getPrice()));
         product_pricePrUnit.setText(productRow.getCompareUnitPriceWithUnit());
+
         final View finalConvertView = convertView;
         product_link.setOnClickListener(new View.OnClickListener() {
             @Override
