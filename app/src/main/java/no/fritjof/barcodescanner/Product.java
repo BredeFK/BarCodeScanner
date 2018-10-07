@@ -13,6 +13,15 @@ import java.net.URL;
 import java.util.Locale;
 
 public class Product implements Parcelable {
+    public static final Parcelable.Creator<Product> CREATOR = new Parcelable.Creator<Product>() {
+        public Product createFromParcel(Parcel in) {
+            return new Product(in);
+        }
+
+        public Product[] newArray(int size) {
+            return new Product[size];
+        }
+    };
     private String store;
     private long id;
     private String title;
@@ -25,7 +34,7 @@ public class Product implements Parcelable {
     private String image;
     private String url;
 
-    public Product(){
+    public Product() {
 
     }
 
@@ -126,21 +135,21 @@ public class Product implements Parcelable {
         this.image = image;
     }
 
-    public URL getUrl(){
+    public URL getUrl() {
         try {
             return new URL(url);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            // Log exception
             return null;
         }
     }
 
-    public void setUrl(String url){
+    public void setUrl(String url) {
         this.url = url;
     }
 
     public String getCompareUnitPriceWithUnit() {
-        return String.format(Locale.getDefault(), "kr %f/%s", pricePerUnit, unit);
+        return String.format(Locale.getDefault(), "kr %s/%s", pricePerUnit, unit);
     }
 
     public float getRecycle() {
@@ -151,11 +160,11 @@ public class Product implements Parcelable {
         this.recycle = recycle;
     }
 
-    private String getPricePlusRecycle(){
-        if(recycle != 0)
-            return String.format(Locale.getDefault(), "%f + %f(pant)", (price-recycle), recycle);
+    public String getPricePlusRecycle() {
+        if (recycle != 0)
+            return String.format(Locale.getDefault(), "%s + %s", (price - recycle), recycle);
         else
-            return String.format(Locale.getDefault(), "%f", price);
+            return String.format(Locale.getDefault(), "%s", price);
     }
 
     public String getStore() {
@@ -185,16 +194,4 @@ public class Product implements Parcelable {
         dest.writeString(image);
         dest.writeString(url);
     }
-
-    public static final Parcelable.Creator<Product> CREATOR = new Parcelable.Creator<Product>()
-    {
-        public Product createFromParcel(Parcel in)
-        {
-            return new Product(in);
-        }
-        public Product[] newArray(int size)
-        {
-            return new Product[size];
-        }
-    };
 }

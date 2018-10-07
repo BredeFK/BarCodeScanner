@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--Colors found on https://color.adobe.com/nb/create/color-wheel/?base=2&rule=Triad&selected=2&name=Mitt%20Color-tema&mode=rgb&rgbvalues=0.10165854186978661,0.14866376928144806,0.4098039215686275,0.758169934640523,0.4467288619103666,0.3397103961289857,0.24705882352941178,0.3176470588235294,0.7098039215686275,0.29312762385236085,0.5098039215686274,0.12646517170404073,0.24721127934871004,0.4098039215686275,0.12214873794821796&swatchOrder=0,1,2,3,4-->
     <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#ff4081</color>
+    <color name="colorPrimaryDark">#1A2668</color>
+    <color name="colorAccent">#4b8220</color>
 </resources>

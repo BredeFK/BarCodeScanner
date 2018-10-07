@@ -2,10 +2,10 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@android:color/white"
     android:id="@+id/product_layout"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@android:color/white">
 
     <ImageView
         android:id="@+id/product_image"
@@ -14,7 +14,7 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:background="@drawable/barcode"
+        android:background="@mipmap/ic_launcher"
         android:contentDescription="@string/image_of_product"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,63 +26,69 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="0dp"
         android:layout_marginTop="20dp"
+        android:maxLines="1"
         android:textAlignment="viewStart"
         android:textColor="@android:color/black"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/product_image"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Brus Fruktsmak" />
+        tools:text="Bringebærbrus" />
 
     <TextView
         android:id="@+id/product_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="0dp"
+        android:ems="11"
         android:layout_marginTop="0dp"
+        android:maxLines="1"
         android:textColor="@android:color/darker_gray"
         android:textSize="14sp"
         app:layout_constraintStart_toEndOf="@id/product_image"
         app:layout_constraintTop_toBottomOf="@id/product_title"
-        tools:text="Light 1,5l First Price" />
+        tools:text="Lett 1,5l flaske Oskar Sylte" />
 
     <TextView
         android:id="@+id/product_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="0dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="10dp"
+        android:maxLines="1"
         android:textAlignment="viewStart"
         android:textColor="@android:color/black"
         android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/product_image"
         app:layout_constraintTop_toBottomOf="@id/product_subtitle"
-        tools:text="kr 17,90" />
+        tools:text="kr 32.9 + 3.0" />
 
     <TextView
         android:id="@+id/product_price_pr_unit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:maxLines="1"
         android:textAlignment="viewStart"
         android:textColor="@android:color/darker_gray"
         android:textSize="14sp"
-        app:layout_constraintStart_toEndOf="@id/product_price"
-        app:layout_constraintTop_toBottomOf="@id/product_subtitle"
-        tools:text="kr 11,93/l" />
+        app:layout_constraintStart_toEndOf="@id/product_image"
+        app:layout_constraintTop_toBottomOf="@id/product_price"
+        tools:text="kr 32,93/l" />
 
     <Button
         android:id="@+id/product_link"
-        android:layout_width="wrap_content"
+        android:layout_width="70dp"
         android:layout_height="40dp"
         android:layout_marginEnd="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:background="@color/colorPrimary"
+        android:text="@string/website"
         android:textColor="@android:color/white"
-        android:text="@string/website"/>
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

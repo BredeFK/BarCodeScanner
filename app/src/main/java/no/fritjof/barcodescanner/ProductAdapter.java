@@ -13,7 +13,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class ProductAdapter extends ArrayAdapter<Product> {
     private Activity activity;
@@ -34,32 +33,32 @@ public class ProductAdapter extends ArrayAdapter<Product> {
         }
 
         // TODO : Use AsyncTask here [https://developer.android.com/training/improving-layouts/smooth-scrolling#java]
-        convertView = this.activity.getLayoutInflater().inflate(R.layout.product_view, container, false);
-        ImageView product_image = convertView.findViewById(R.id.product_image);
-        TextView product_title = convertView.findViewById(R.id.product_title);
-        TextView product_subtitle = convertView.findViewById(R.id.product_subtitle);
-        TextView product_price = convertView.findViewById(R.id.product_price);
-        TextView product_pricePrUnit = convertView.findViewById(R.id.product_price_pr_unit);
-        Button product_link = convertView.findViewById(R.id.product_link);
+        View view = this.activity.getLayoutInflater().inflate(R.layout.product_view, container, false);
+        ImageView productImage = view.findViewById(R.id.product_image);
+        TextView productTitle = view.findViewById(R.id.product_title);
+        TextView productSubtitle = view.findViewById(R.id.product_subtitle);
+        TextView productPrice = view.findViewById(R.id.product_price);
+        TextView productPricePrUnit = view.findViewById(R.id.product_price_pr_unit);
+        Button productLink = view.findViewById(R.id.product_link);
 
-        product_image.setImageBitmap(productRow.getImage());
-        product_title.setText(productRow.getTitle());
-        product_subtitle.setText(productRow.getSubTitle());
-        product_price.setText(String.format("Kr %s", productRow.getPrice()));
-        product_pricePrUnit.setText(productRow.getCompareUnitPriceWithUnit());
+        productImage.setImageBitmap(productRow.getImage());
+        productTitle.setText(productRow.getTitle());
+        productSubtitle.setText(productRow.getSubTitle());
+        productPrice.setText(productRow.getPricePlusRecycle());
+        productPricePrUnit.setText(productRow.getCompareUnitPriceWithUnit());
 
-        final View finalConvertView = convertView;
-        product_link.setOnClickListener(new View.OnClickListener() {
+        final View finalView = view;
+        productLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
                 Intent intent = new Intent(getContext(), StorePageActivity.class);
                 bundle.putString("itemURL", productRow.getUrl().toString());
                 intent.putExtras(bundle);
-                finalConvertView.getContext().startActivity(intent);
+                finalView.getContext().startActivity(intent);
             }
         });
 
-        return convertView;
+        return view;
     }
 }

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Product_List">
+    tools:context=".ProductList">
 
     <ListView
         android:id="@+id/product_list"

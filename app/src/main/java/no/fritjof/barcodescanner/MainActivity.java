@@ -36,6 +36,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_LOW_QUALITY_IMAGE = 2;
@@ -45,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView resultView;
     private EditText editText;
     private Store[] stores;
-    private Uri imageUri = null;
     private String currentPhotoPath;
 
     @Override
@@ -71,10 +71,6 @@ public class MainActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        // TODO : change this to picture from phone
-        // Bitmap barcode = BitmapFactory.decodeResource(this.getResources(), R.drawable.barcode);
-
-
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,13 +81,12 @@ public class MainActivity extends AppCompatActivity {
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // lowQualityImage();
                 highQualityImage();
             }
         });
     }
 
-    private void searchStoresForProducts(Store store, String barcode){
+    private void searchStoresForProducts(Store store, String barcode) {
         if (!barcode.isEmpty()) {
             Product[] products = parseJSONtoProducts(store, barcode);
 
@@ -100,8 +95,8 @@ public class MainActivity extends AppCompatActivity {
                     resultView.setText(products[0].toString());
                     imageView.setImageBitmap(products[0].getImage());
                 } else if (products.length > 1) {
-                    // Display list in Product_List activity
-                    Intent intent = new Intent(MainActivity.this, Product_List.class);
+                    // Display list in ProductList activity
+                    Intent intent = new Intent(MainActivity.this, ProductList.class);
                     Bundle bundle = new Bundle();
                     bundle.putInt("products_length", products.length);
                     for (int i = 0; i < products.length; i++) {
@@ -139,17 +134,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    public void lowQualityImage() {
-        Intent takePictureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_LOW_QUALITY_IMAGE);
-        }
-    }
-
     private File createImageFile() throws IOException {
         // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(

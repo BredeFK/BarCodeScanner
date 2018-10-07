@@ -1,8 +1,8 @@
 package no.fritjof.barcodescanner;
 
 import android.annotation.SuppressLint;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -16,7 +16,7 @@ public class StorePageActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         WebView webView = findViewById(R.id.product_web_view);
-        if(bundle != null){
+        if (bundle != null) {
             String url = bundle.getString("itemURL");
             webView.setWebViewClient(new WebViewClient());
             webView.getSettings().setJavaScriptEnabled(true);

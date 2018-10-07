@@ -30,7 +30,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Product_List" />
+        <activity android:name=".ProductList" />
         <activity android:name=".StorePageActivity"></activity>
         <provider
             android:name="android.support.v4.content.FileProvider"

@@ -6,7 +6,7 @@ public class Store {
     private String imageURL;
     private String itemURL;
 
-    public Store(String name){
+    public Store(String name) {
         this.name = name;
     }
 

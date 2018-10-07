@@ -3,9 +3,8 @@ package no.fritjof.barcodescanner;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
-import android.widget.Toast;
 
-public class Product_List extends AppCompatActivity {
+public class ProductList extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +31,9 @@ public class Product_List extends AppCompatActivity {
     private void fillProductList() {
         ListView productListView = findViewById(R.id.product_list);
         Product[] products = getProductArray();
-        ProductAdapter adapter = new ProductAdapter(Product_List.this, R.layout.product_view);
+        ProductAdapter adapter = new ProductAdapter(ProductList.this, R.layout.product_view);
         adapter.clear();
-        for(Product product : products){
+        for (Product product : products) {
             adapter.add(product);
         }
         productListView.setAdapter(adapter);
