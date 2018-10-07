@@ -5,10 +5,8 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.text.format.Time;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
@@ -25,7 +23,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -72,11 +69,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!editText.getText().toString().isEmpty()) {
-                    Product product = parseJSONtoProduct(stores[0], editText.getText().toString());
+                    Product[] products = parseJSONtoProduct(stores[0], editText.getText().toString());
 
-                    if (product != null) {
-                        resultView.setText(product.toString());
-                        imageView.setImageBitmap(product.getImage());
+                    if (products != null) {
+                        resultView.setText(products[0].toString());
+                        imageView.setImageBitmap(products[0].getImage());
                     }
                 }
             }
@@ -85,13 +82,13 @@ public class MainActivity extends AppCompatActivity {
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // lowQualityImage();
+                // lowQualityImage();
                 highQualityImage();
             }
         });
     }
 
-    private void highQualityImage(){
+    private void highQualityImage() {
         System.out.println("Snart");
     }
 
@@ -140,28 +137,33 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
-    private Product parseJSONtoProduct(Store store, String searchItem) {
+    private Product[] parseJSONtoProduct(Store store, String searchItem) {
 
-        Product product = new Product();
+
         try {
             URL url = new URL(store.getSearchURL() + searchItem);
             JSONObject jsonObject = getJsonObjectFromURL(url);
             assert jsonObject != null;
             JSONArray param = jsonObject.getJSONArray("products");
-            JSONObject object = param.getJSONObject(0);
 
-            product.setStore(store.getName());
-            product.setId(object.getInt("id"));
-            product.setTitle(object.getString("title"));
-            product.setSubTitle(object.getString("subtitle"));
-            product.setCategoryName(object.getString("categoryname"));
-            product.setPrice((float) object.getDouble("price"));
-            product.setPricePerUnit((float) object.getDouble("comparepriceperunit"));
-            product.setUnit(object.getString("compareunit"));
-            product.setRecycle((float) object.getDouble("recycleValue"));
-            product.setImage(store.getImageURL() + object.getString("imagename"));
+            Product[] products = new Product[param.length()];
+            for (int i = 0; i < products.length; i++) {
+                JSONObject object = param.getJSONObject(i);
+                products[i] = new Product();
 
-            return product;
+                products[i].setStore(store.getName());
+                products[i].setId(object.getInt("id"));
+                products[i].setTitle(object.getString("title"));
+                products[i].setSubTitle(object.getString("subtitle"));
+                products[i].setCategoryName(object.getString("categoryname"));
+                products[i].setPrice((float) object.getDouble("price"));
+                products[i].setPricePerUnit((float) object.getDouble("comparepriceperunit"));
+                products[i].setUnit(object.getString("compareunit"));
+                products[i].setRecycle((float) object.getDouble("recycleValue"));
+                products[i].setImage(store.getImageURL() + object.getString("imagename"));
+            }
+
+            return products;
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
