@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         stores[0] = new Store("Spar");
         stores[0].setImageURL("https://res.cloudinary.com/norgesgruppen/image/upload/b_white,c_pad,f_auto,h_584,q_50,w_584/");
         stores[0].setSearchURL("https://nettbutikk.spar.no/api/products/search?numberofhitsfortype=products&numberofhitsfortype=recipes&page=1&perpage=20&query=");
+        stores[0].setItemURL("https://spar.no/nettbutikk");
 
         FloatingActionButton actionButton = findViewById(R.id.actionID);
         imageView = findViewById(R.id.imageID);
@@ -69,11 +71,28 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!editText.getText().toString().isEmpty()) {
-                    Product[] products = parseJSONtoProduct(stores[0], editText.getText().toString());
+                    Product[] products = parseJSONtoProducts(stores[0], editText.getText().toString());
 
                     if (products != null) {
-                        resultView.setText(products[0].toString());
-                        imageView.setImageBitmap(products[0].getImage());
+                        if (products.length == 1) {
+                            resultView.setText(products[0].toString());
+                            imageView.setImageBitmap(products[0].getImage());
+                        } else if (products.length > 1) {
+                            // Display list in Product_List activity
+                            Intent intent = new Intent(MainActivity.this, Product_List.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putInt("products_length", products.length);
+                            for(int i = 0; i < products.length; i++){
+                                bundle.putParcelable("products" + i, products[i]);
+                            }
+
+                            intent.putExtras(bundle);
+                            startActivity(intent);
+
+                        } else {
+                            Toast.makeText(MainActivity.this, "Could not find any products", Toast.LENGTH_LONG).show();
+                        }
+
                     }
                 }
             }
@@ -137,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
-    private Product[] parseJSONtoProduct(Store store, String searchItem) {
+    private Product[] parseJSONtoProducts(Store store, String searchItem) {
 
 
         try {
@@ -161,13 +180,14 @@ public class MainActivity extends AppCompatActivity {
                 products[i].setUnit(object.getString("compareunit"));
                 products[i].setRecycle((float) object.getDouble("recycleValue"));
                 products[i].setImage(store.getImageURL() + object.getString("imagename"));
+                products[i].setUrl(store.getItemURL() + object.getString("slugifiedurl"));
             }
 
             return products;
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
-        return null;
+        return new Product[0];
     }
 
 }

@@ -2,14 +2,17 @@ package no.fritjof.barcodescanner;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
 
-public class Product {
+public class Product implements Parcelable {
     private String store;
     private long id;
     private String title;
@@ -19,9 +22,28 @@ public class Product {
     private float pricePerUnit;
     private float recycle;
     private String unit;
-    private Bitmap image;
+    private String image;
+    private String url;
 
-    private static Bitmap getBitmapFromURL(String src) {
+    public Product(){
+
+    }
+
+    public Product(Parcel in) {
+        store = in.readString();
+        id = in.readLong();
+        title = in.readString();
+        subTitle = in.readString();
+        categoryName = in.readString();
+        price = in.readFloat();
+        pricePerUnit = in.readFloat();
+        recycle = in.readFloat();
+        unit = in.readString();
+        image = in.readString();
+        url = in.readString();
+    }
+
+    public static Bitmap getBitmapFromURL(String src) {
         try {
             URL url = new URL(src);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -97,11 +119,24 @@ public class Product {
     }
 
     public Bitmap getImage() {
-        return image;
+        return getBitmapFromURL(image);
     }
 
-    public void setImage(String src) {
-        this.image = getBitmapFromURL(src);
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public URL getUrl(){
+        try {
+            return new URL(url);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void setUrl(String url){
+        this.url = url;
     }
 
     public String getCompareUnitPriceWithUnit() {
@@ -130,4 +165,36 @@ public class Product {
     public void setStore(String store) {
         this.store = store;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(store);
+        dest.writeLong(id);
+        dest.writeString(title);
+        dest.writeString(subTitle);
+        dest.writeString(categoryName);
+        dest.writeFloat(price);
+        dest.writeFloat(pricePerUnit);
+        dest.writeFloat(recycle);
+        dest.writeString(unit);
+        dest.writeString(image);
+        dest.writeString(url);
+    }
+
+    public static final Parcelable.Creator<Product> CREATOR = new Parcelable.Creator<Product>()
+    {
+        public Product createFromParcel(Parcel in)
+        {
+            return new Product(in);
+        }
+        public Product[] newArray(int size)
+        {
+            return new Product[size];
+        }
+    };
 }
