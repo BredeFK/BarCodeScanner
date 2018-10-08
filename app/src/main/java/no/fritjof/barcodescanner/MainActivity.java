@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_LOW_QUALITY_IMAGE = 2;
     private static final int REQUEST_HIGH_QUALITY_IMAGE = 1;
     private static final int NUMBER_OF_STORES = 2;
-    private int selectedStore = 0;
+    private int selectedItem = 0;
     private ImageView imageView;
     private TextView resultView;
     private EditText searchEntry;
@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchStoresForProducts(stores[selectedStore], searchEntry.getText().toString());
+                searchStoresForProducts(stores, searchEntry.getText().toString());
             }
         });
 
@@ -116,6 +116,8 @@ public class MainActivity extends AppCompatActivity {
             array.add(stores[i].getName());
         }
 
+        array.add(getString(R.string.cheapest));
+
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, array);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dropDownStores.setAdapter(adapter);
@@ -123,7 +125,8 @@ public class MainActivity extends AppCompatActivity {
         dropDownStores.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedStore = position;
+                // TODO : save selectedItem to sharedPrefs
+                selectedItem = position;
             }
 
             @Override
@@ -140,13 +143,47 @@ public class MainActivity extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
     }
 
-    private void searchStoresForProducts(Store store, String barcode) {
+    private void searchStoresForProducts(Store[] stores, String barcode) {
         if (!barcode.isEmpty()) {
-            Product[] products = parseJSONtoProducts(store, barcode);
+
+            Product[] products = null;
+            String differance = "";
+
+            // If Cheapest is chosen (Highest in stores array is NUMBER_OF_STORES - 1)
+            if (selectedItem == NUMBER_OF_STORES) {
+                // TODO : make this dynamic
+                Product[] sparProducts = parseJSONtoProducts(stores[0], barcode);
+                Product[] jokerProducts = parseJSONtoProducts(stores[1], barcode);
+
+                // If non of the objects are not null
+                if(sparProducts != null && jokerProducts != null){
+
+                    // If both got one match
+                    if(sparProducts.length == 1 && jokerProducts.length == 1){
+
+                        // If it's the same item
+                        if(sparProducts[0].isMatchingItem(jokerProducts[0])){
+
+                            // Check if spar is cheaper
+                            if(sparProducts[0].isCheaperThan(jokerProducts[0])){
+                                products = sparProducts;
+                            } else {
+                                // else joker is cheaper
+                                products = jokerProducts;
+                            }
+
+                            differance = String.format("\nDifferance: kr %s", sparProducts[0].getDifferenceInPrice(jokerProducts[0]));
+                        }
+                    }
+                }
+            } else {
+               products = parseJSONtoProducts(stores[selectedItem], barcode);
+            }
 
             if (products != null) {
                 if (products.length == 1) {
-                    resultView.setText(products[0].toString());
+
+                    resultView.setText(String.format("%s%s", products[0].toString(), differance));
                     imageView.setImageBitmap(products[0].getImageName());
                 } else if (products.length > 1) {
                     // Display list in ProductList activity
@@ -215,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
                 case REQUEST_HIGH_QUALITY_IMAGE:
                     String barcode = getRawValueFromBarcode(getPicture());
                     searchEntry.setText("");
-                    searchStoresForProducts(stores[selectedStore], barcode);
+                    searchStoresForProducts(stores, barcode);
                     break;
                 default:
                     break;

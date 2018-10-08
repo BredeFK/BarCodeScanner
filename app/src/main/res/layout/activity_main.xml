@@ -63,7 +63,7 @@
     <TextView
         android:id="@+id/productDetails"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="135dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -72,7 +72,7 @@
         app:layout_constraintTop_toBottomOf="@+id/searchButton"
         android:paddingStart="80dp"
         android:paddingEnd="20dp"
-        tools:text="Store:  Spar\nID:  2147483647\nName:  Monsetr Energy\nSubName:  0,5l boks\nCategory:  Drikke\nPrice:  kr 22.9 + 2.0\nPrice per compareUnit: kr45.8/l" />
+        tools:text="Store:  Spar\nID:  2147483647\nName:  Monsetr Energy\nSubName:  0,5l boks\nCategory:  Drikke\nPrice:  kr 22.9 + 2.0\nPrice per compareUnit: kr45.8/l\nDifferance: kr 2.0" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/pictureButton"

@@ -5,6 +5,7 @@
     <string name="website">Website</string>
     <string name="search_for_product">Search for product</string>
     <string name="search">Search</string>
+    <string name="cheapest">Cheapest</string>
     <string-array name="stores_array">
         <item>Spar</item>
         <item>Joker</item>

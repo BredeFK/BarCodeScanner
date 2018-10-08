@@ -205,8 +205,8 @@ public class Product implements Parcelable {
             return String.format(Locale.getDefault(), "kr %s", tempPrice);
     }
 
-    public float getCorrectPrice(){
-         return (this.isOffer) ? this.pricePerUnit : this.price;
+    public float getCorrectPrice() {
+        return (this.isOffer) ? this.pricePerUnit : this.price;
     }
 
     public String getStore() {
@@ -217,8 +217,20 @@ public class Product implements Parcelable {
         this.store = store;
     }
 
-    public boolean isCheaperThan(Product product){
+    public boolean isCheaperThan(Product product) {
         return this.getCorrectPrice() < product.getCorrectPrice();
+    }
+
+    public boolean isMatchingItem(Product product) {
+        return this.getId() == product.getId();
+    }
+
+    public float getDifferenceInPrice(Product product) {
+        if (this.getCorrectPrice() < product.getCorrectPrice())
+            return product.getCorrectPrice() - this.getCorrectPrice();
+        else if (this.getCorrectPrice() > product.getCorrectPrice())
+            return this.getCorrectPrice() - product.getCorrectPrice();
+        else return this.getCorrectPrice();
     }
 
     @Override
