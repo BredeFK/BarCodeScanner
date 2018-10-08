@@ -198,11 +198,15 @@ public class Product implements Parcelable {
         boolean onlyPricePerUnit = (compareUnit.isEmpty() && !unit.isEmpty());
 
         if (recycleValue != 0)
-            return String.format(Locale.getDefault(), "kr %s + %s", (tempPrice - recycleValue), recycleValue);
+            return String.format(Locale.getDefault(), "kr %s + %s", tempPrice, recycleValue);
         else if (onlyPricePerUnit)
             return String.format(Locale.getDefault(), "kr %s/%s", tempPrice, unit);
         else
             return String.format(Locale.getDefault(), "kr %s", tempPrice);
+    }
+
+    public float getCorrectPrice(){
+         return (this.isOffer) ? this.pricePerUnit : this.price;
     }
 
     public String getStore() {
@@ -211,6 +215,10 @@ public class Product implements Parcelable {
 
     public void setStore(String store) {
         this.store = store;
+    }
+
+    public boolean isCheaperThan(Product product){
+        return this.getCorrectPrice() < product.getCorrectPrice();
     }
 
     @Override

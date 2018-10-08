@@ -13,9 +13,12 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.SparseArray;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,41 +44,61 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_LOW_QUALITY_IMAGE = 2;
     private static final int REQUEST_HIGH_QUALITY_IMAGE = 1;
-    private static final int NUMBER_OF_STORES = 1;
+    private static final int NUMBER_OF_STORES = 2;
+    private int selectedStore = 0;
     private ImageView imageView;
     private TextView resultView;
     private EditText editText;
+    private FloatingActionButton actionButton;
+    private Button searchButton;
     private Store[] stores;
     private String currentPhotoPath;
+    private Spinner dropDownStores;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        getStores();
+        getComponents();
+        overrideNetworkOnMainThreadException();
+        fillSpinnerAndSetOnListeners();
+    }
+
+    private void getStores() {
         stores = new Store[NUMBER_OF_STORES];
 
-        // Create new store Spar
+        // Create new store: Spar
         stores[0] = new Store("Spar");
         stores[0].setImageURL("https://res.cloudinary.com/norgesgruppen/image/upload/b_white,c_pad,f_auto,h_400,q_50,w_400/");
         stores[0].setSearchURL("https://nettbutikk.spar.no/api/products/search?numberofhitsfortype=products&numberofhitsfortype=recipes&page=1&perpage=20&query=");
         stores[0].setItemURL("https://spar.no/nettbutikk");
 
-        FloatingActionButton actionButton = findViewById(R.id.actionID);
-        imageView = findViewById(R.id.imageID);
-        resultView = findViewById(R.id.textViewID);
-        editText = findViewById(R.id.editTextID);
-        Button button = findViewById(R.id.buttonSok);
+        // Create new store: Joker
+        stores[1] = new Store("Joker");
+        stores[1].setImageURL("https://res.cloudinary.com/norgesgruppen/image/upload/b_white,c_pad,f_auto,h_400,q_50,w_400/");
+        stores[1].setSearchURL("https://nettbutikk.joker.no/api/products/search?numberofhitsfortype=products&numberofhitsfortype=recipes&page=1&perpage=20&query=");
+        stores[1].setItemURL("https://joker.no/nettbutikk");
 
+        // Create new store: Meny
 
-        // TODO : Remove this code and put it in async later : https://stackoverflow.com/a/9289190/8883030
-        // https://developer.android.com/reference/android/os/AsyncTask
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+    }
 
-        button.setOnClickListener(new View.OnClickListener() {
+    private void getComponents() {
+        actionButton = findViewById(R.id.pictureButton);
+        imageView = findViewById(R.id.pictureView);
+        resultView = findViewById(R.id.productDetails);
+        editText = findViewById(R.id.searchEntry);
+        searchButton = findViewById(R.id.searchButton);
+        dropDownStores = findViewById(R.id.dropdownStores);
+    }
+
+    private void fillSpinnerAndSetOnListeners(){
+        searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchStoresForProducts(stores[0], editText.getText().toString());
+                searchStoresForProducts(stores[selectedStore], editText.getText().toString());
             }
         });
 
@@ -85,6 +108,34 @@ public class MainActivity extends AppCompatActivity {
                 highQualityImage();
             }
         });
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.stores_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dropDownStores.setAdapter(adapter);
+
+        dropDownStores.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selected = dropDownStores.getItemAtPosition(position).toString();
+                if(selected.equals(stores[0].getName())){
+                    selectedStore = 0;
+                } else {
+                    selectedStore = 1;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    private void overrideNetworkOnMainThreadException(){
+        // TODO : Remove this code and put it in async later : https://stackoverflow.com/a/9289190/8883030
+        // https://developer.android.com/reference/android/os/AsyncTask
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
     }
 
     private void searchStoresForProducts(Store store, String barcode) {
@@ -100,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(MainActivity.this, ProductList.class);
                     Bundle bundle = new Bundle();
                     bundle.putInt("products_length", products.length);
+
                     for (int i = 0; i < products.length; i++) {
                         bundle.putParcelable("products" + i, products[i]);
                     }
@@ -160,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case REQUEST_HIGH_QUALITY_IMAGE:
                     String barcode = getRawValueFromBarcode(getPicture());
-                    searchStoresForProducts(stores[0], barcode);
+                    searchStoresForProducts(stores[selectedStore], barcode);
                     break;
                 default:
                     break;
