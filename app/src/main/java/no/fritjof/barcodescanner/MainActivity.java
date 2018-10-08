@@ -38,6 +38,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private int selectedStore = 0;
     private ImageView imageView;
     private TextView resultView;
-    private EditText editText;
+    private EditText searchEntry;
     private FloatingActionButton actionButton;
     private Button searchButton;
     private Store[] stores;
@@ -89,16 +90,16 @@ public class MainActivity extends AppCompatActivity {
         actionButton = findViewById(R.id.pictureButton);
         imageView = findViewById(R.id.pictureView);
         resultView = findViewById(R.id.productDetails);
-        editText = findViewById(R.id.searchEntry);
+        searchEntry = findViewById(R.id.searchEntry);
         searchButton = findViewById(R.id.searchButton);
         dropDownStores = findViewById(R.id.dropdownStores);
     }
 
-    private void fillSpinnerAndSetOnListeners(){
+    private void fillSpinnerAndSetOnListeners() {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchStoresForProducts(stores[selectedStore], editText.getText().toString());
+                searchStoresForProducts(stores[selectedStore], searchEntry.getText().toString());
             }
         });
 
@@ -109,19 +110,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.stores_array, android.R.layout.simple_spinner_item);
+
+        ArrayList<String> array = new ArrayList<>();
+        for (int i = 0; i < NUMBER_OF_STORES; i++) {
+            array.add(stores[i].getName());
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, array);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dropDownStores.setAdapter(adapter);
 
         dropDownStores.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selected = dropDownStores.getItemAtPosition(position).toString();
-                if(selected.equals(stores[0].getName())){
-                    selectedStore = 0;
-                } else {
-                    selectedStore = 1;
-                }
+                selectedStore = position;
             }
 
             @Override
@@ -131,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void overrideNetworkOnMainThreadException(){
+    private void overrideNetworkOnMainThreadException() {
         // TODO : Remove this code and put it in async later : https://stackoverflow.com/a/9289190/8883030
         // https://developer.android.com/reference/android/os/AsyncTask
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -194,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
+                ".jpg",    /* suffix */
                 storageDir      /* directory */
         );
 
@@ -212,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case REQUEST_HIGH_QUALITY_IMAGE:
                     String barcode = getRawValueFromBarcode(getPicture());
+                    searchEntry.setText("");
                     searchStoresForProducts(stores[selectedStore], barcode);
                     break;
                 default:
