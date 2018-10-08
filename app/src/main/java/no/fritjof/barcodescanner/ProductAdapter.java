@@ -41,10 +41,11 @@ public class ProductAdapter extends ArrayAdapter<Product> {
         TextView productPricePrUnit = view.findViewById(R.id.product_price_pr_unit);
         Button productLink = view.findViewById(R.id.product_link);
 
-        productImage.setImageBitmap(productRow.getImage());
+        productImage.setImageBitmap(productRow.getImageName());
         productTitle.setText(productRow.getTitle());
         productSubtitle.setText(productRow.getSubTitle());
-        productPrice.setText(productRow.getPricePlusRecycle());
+        System.out.println(productRow.getTitle() + ": " + productRow.getUnit());
+        productPrice.setText(productRow.getPriceFormatted());
         productPricePrUnit.setText(productRow.getCompareUnitPriceWithUnit());
 
         final View finalView = view;

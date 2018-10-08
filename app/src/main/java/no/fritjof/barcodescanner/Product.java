@@ -28,11 +28,14 @@ public class Product implements Parcelable {
     private String subTitle;
     private String categoryName;
     private float price;
+    private float comparePricePerUnit;
     private float pricePerUnit;
-    private float recycle;
+    private float recycleValue;
+    private String compareUnit;
     private String unit;
-    private String image;
+    private String imageName;
     private String url;
+    private boolean isOffer;
 
     public Product() {
 
@@ -45,11 +48,14 @@ public class Product implements Parcelable {
         subTitle = in.readString();
         categoryName = in.readString();
         price = in.readFloat();
+        comparePricePerUnit = in.readFloat();
         pricePerUnit = in.readFloat();
-        recycle = in.readFloat();
+        recycleValue = in.readFloat();
+        compareUnit = in.readString();
         unit = in.readString();
-        image = in.readString();
+        imageName = in.readString();
         url = in.readString();
+        isOffer = in.readInt() != 0;
     }
 
     public static Bitmap getBitmapFromURL(String src) {
@@ -68,7 +74,7 @@ public class Product implements Parcelable {
 
     @Override
     public String toString() {
-        return String.format(Locale.getDefault(), "Store: %s%nID: %d%nName: %s%nSubName: %s%nCategory: %s%nPrice: kr %s%nPrice per unit: %s", store, id, title, subTitle, categoryName, getPricePlusRecycle(), getCompareUnitPriceWithUnit());
+        return String.format(Locale.getDefault(), "Store:  %s%nID:  %d%nName:  %s%nSubName:  %s%nCategory:  %s%nPrice:  %s%nPrice per compareUnit:  %s", store, id, title, subTitle, categoryName, getPriceFormatted(), getCompareUnitPriceWithUnit());
     }
 
     public long getId() {
@@ -111,28 +117,28 @@ public class Product implements Parcelable {
         this.price = price;
     }
 
-    public float getPricePerUnit() {
-        return pricePerUnit;
+    public float getComparePricePerUnit() {
+        return comparePricePerUnit;
     }
 
-    public void setPricePerUnit(float pricePerUnit) {
-        this.pricePerUnit = pricePerUnit;
+    public void setComparePricePerUnit(float comparePricePerUnit) {
+        this.comparePricePerUnit = comparePricePerUnit;
     }
 
-    public String getUnit() {
-        return unit;
+    public String getCompareUnit() {
+        return compareUnit;
     }
 
-    public void setUnit(String unit) {
-        this.unit = unit;
+    public void setCompareUnit(String compareUnit) {
+        this.compareUnit = compareUnit;
     }
 
-    public Bitmap getImage() {
-        return getBitmapFromURL(image);
+    public Bitmap getImageName() {
+        return getBitmapFromURL(imageName);
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
     }
 
     public URL getUrl() {
@@ -148,23 +154,55 @@ public class Product implements Parcelable {
         this.url = url;
     }
 
+    public String getUnit() {
+        return this.unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public boolean isOffer() {
+        return isOffer;
+    }
+
+    public void setOffer(boolean offer) {
+        isOffer = offer;
+    }
+
+    public float getPricePerUnit() {
+        return pricePerUnit;
+    }
+
+    public void setPricePerUnit(float pricePerUnit) {
+        this.pricePerUnit = pricePerUnit;
+    }
+
     public String getCompareUnitPriceWithUnit() {
-        return String.format(Locale.getDefault(), "kr %s/%s", pricePerUnit, unit);
-    }
-
-    public float getRecycle() {
-        return recycle;
-    }
-
-    public void setRecycle(float recycle) {
-        this.recycle = recycle;
-    }
-
-    public String getPricePlusRecycle() {
-        if (recycle != 0)
-            return String.format(Locale.getDefault(), "%s + %s", (price - recycle), recycle);
+        if (comparePricePerUnit != 0)
+            return String.format(Locale.getDefault(), "kr %s/%s", comparePricePerUnit, compareUnit);
         else
-            return String.format(Locale.getDefault(), "%s", price);
+            return "";
+    }
+
+    public float getRecycleValue() {
+        return recycleValue;
+    }
+
+    public void setRecycleValue(float recycleValue) {
+        this.recycleValue = recycleValue;
+    }
+
+    public String getPriceFormatted() {
+        float tempPrice = (isOffer) ? pricePerUnit : price;
+        boolean onlyPricePerUnit = (compareUnit.isEmpty() && !unit.isEmpty());
+
+        if (recycleValue != 0)
+            return String.format(Locale.getDefault(), "kr %s + %s", (tempPrice - recycleValue), recycleValue);
+        else if (onlyPricePerUnit)
+            return String.format(Locale.getDefault(), "kr %s/%s", tempPrice, unit);
+        else
+            return String.format(Locale.getDefault(), "kr %s", tempPrice);
     }
 
     public String getStore() {
@@ -188,10 +226,13 @@ public class Product implements Parcelable {
         dest.writeString(subTitle);
         dest.writeString(categoryName);
         dest.writeFloat(price);
+        dest.writeFloat(comparePricePerUnit);
         dest.writeFloat(pricePerUnit);
-        dest.writeFloat(recycle);
+        dest.writeFloat(recycleValue);
+        dest.writeString(compareUnit);
         dest.writeString(unit);
-        dest.writeString(image);
+        dest.writeString(imageName);
         dest.writeString(url);
+        dest.writeInt((isOffer ? 1 : 0));
     }
 }

@@ -67,7 +67,8 @@ public class MainActivity extends AppCompatActivity {
         Button button = findViewById(R.id.buttonSok);
 
 
-        // TODO : Remove this code and put it in async later
+        // TODO : Remove this code and put it in async later : https://stackoverflow.com/a/9289190/8883030
+        // https://developer.android.com/reference/android/os/AsyncTask
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
@@ -93,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
             if (products != null) {
                 if (products.length == 1) {
                     resultView.setText(products[0].toString());
-                    imageView.setImageBitmap(products[0].getImage());
+                    imageView.setImageBitmap(products[0].getImageName());
                 } else if (products.length > 1) {
                     // Display list in ProductList activity
                     Intent intent = new Intent(MainActivity.this, ProductList.class);
@@ -231,16 +232,22 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject object = param.getJSONObject(i);
                 products[i] = new Product();
 
+                float pricePrUnit = (!object.get("comparepriceperunit").equals(null)) ? (float) object.getDouble("comparepriceperunit") : 0;
+                String compareUnit = (!object.get("compareunit").equals(null)) ? object.getString("compareunit") : "";
+
                 products[i].setStore(store.getName());
                 products[i].setId(object.getInt("id"));
                 products[i].setTitle(object.getString("title"));
                 products[i].setSubTitle(object.getString("subtitle"));
                 products[i].setCategoryName(object.getString("categoryname"));
                 products[i].setPrice((float) object.getDouble("price"));
-                products[i].setPricePerUnit((float) object.getDouble("comparepriceperunit"));
-                products[i].setUnit(object.getString("compareunit"));
-                products[i].setRecycle((float) object.getDouble("recycleValue"));
-                products[i].setImage(store.getImageURL() + object.getString("imagename"));
+                products[i].setComparePricePerUnit(pricePrUnit);
+                products[i].setCompareUnit(compareUnit);
+                products[i].setPricePerUnit((float) object.getDouble("priceperunit"));
+                products[i].setOffer(object.getBoolean("isoffer"));
+                products[i].setUnit(object.getString("unit"));
+                products[i].setRecycleValue((float) object.getDouble("recycleValue"));
+                products[i].setImageName(store.getImageURL() + object.getString("imagename"));
                 products[i].setUrl(store.getItemURL() + object.getString("slugifiedurl"));
             }
 
