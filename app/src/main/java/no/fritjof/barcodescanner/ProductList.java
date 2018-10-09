@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
 
 public class ProductList extends AppCompatActivity {
+    private boolean cheapestSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +20,7 @@ public class ProductList extends AppCompatActivity {
         int length;
         if (bundle != null) {
             length = bundle.getInt("products_length");
+            cheapestSelected = bundle.getBoolean("cheapest", false);
             Product[] products = new Product[length];
             for (int i = 0; i < products.length; i++) {
                 products[i] = bundle.getParcelable("products" + i);
@@ -31,12 +33,17 @@ public class ProductList extends AppCompatActivity {
     private void fillProductList() {
         ListView productListView = findViewById(R.id.product_list);
         Product[] products = getProductArray();
-        ProductAdapter adapter = new ProductAdapter(ProductList.this, R.layout.product_view);
+        ProductAdapter adapter = new ProductAdapter(ProductList.this, R.layout.product_view, cheapestSelected);
         adapter.clear();
         for (Product product : products) {
             adapter.add(product);
         }
         productListView.setAdapter(adapter);
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

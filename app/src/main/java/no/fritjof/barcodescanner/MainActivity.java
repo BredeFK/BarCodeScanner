@@ -1,5 +1,6 @@
 package no.fritjof.barcodescanner;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,14 +9,17 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.SparseArray;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -43,7 +47,6 @@ import java.util.Date;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int REQUEST_LOW_QUALITY_IMAGE = 2;
     private static final int REQUEST_HIGH_QUALITY_IMAGE = 1;
     private static final int NUMBER_OF_STORES = 2;
     private int selectedItem = 0;
@@ -51,10 +54,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView resultView;
     private EditText searchEntry;
     private FloatingActionButton actionButton;
-    private Button searchButton;
     private Store[] stores;
     private String currentPhotoPath;
     private Spinner dropDownStores;
+    private ConstraintLayout mainLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
         getComponents();
         overrideNetworkOnMainThreadException();
         fillSpinnerAndSetOnListeners();
+        checkForCompareProduct();
     }
 
     private void getStores() {
@@ -87,19 +91,64 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getComponents() {
+        mainLayout = findViewById(R.id.mainLayout);
         actionButton = findViewById(R.id.pictureButton);
         imageView = findViewById(R.id.pictureView);
         resultView = findViewById(R.id.productDetails);
         searchEntry = findViewById(R.id.searchEntry);
-        searchButton = findViewById(R.id.searchButton);
         dropDownStores = findViewById(R.id.dropdownStores);
     }
 
-    private void fillSpinnerAndSetOnListeners() {
-        searchButton.setOnClickListener(new View.OnClickListener() {
+    private void checkForCompareProduct() {
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            String barcode = bundle.getString("compareObject");
+            if (barcode != null) {
+                selectedItem = NUMBER_OF_STORES;
+                dropDownStores.setSelection(selectedItem);
+                searchEntry.setText(barcode);
+                searchStoresForProducts(stores, barcode);
+            }
+        }
+    }
+
+    private void hideKeyboardAndCursor(ConstraintLayout layout, final EditText editText) {
+        // Hide cursor
+        editText.setCursorVisible(false);
+
+        // Show cursor if clicked on
+        editText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchStoresForProducts(stores, searchEntry.getText().toString());
+                editText.setCursorVisible(true);
+            }
+        });
+
+        // Hide keyboard
+        InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (manager != null) {
+            manager.hideSoftInputFromWindow(layout.getWindowToken(), 0);
+        }
+    }
+
+    private void fillSpinnerAndSetOnListeners() {
+        searchEntry.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                // If search button on keyboard is pressed
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+
+                    // Hide keyboard and cursor
+                    hideKeyboardAndCursor(mainLayout, searchEntry);
+
+                    resultView.setText("");
+                    imageView.setImageDrawable(null);
+
+                    // Search for the product(s)
+                    searchStoresForProducts(stores, searchEntry.getText().toString());
+                    return true;
+                }
+                return false;
             }
         });
 
@@ -147,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
         if (!barcode.isEmpty()) {
 
             Product[] products = null;
-            String differance = "";
+            String difference = "";
 
             // If Cheapest is chosen (Highest in stores array is NUMBER_OF_STORES - 1)
             if (selectedItem == NUMBER_OF_STORES) {
@@ -156,40 +205,48 @@ public class MainActivity extends AppCompatActivity {
                 Product[] jokerProducts = parseJSONtoProducts(stores[1], barcode);
 
                 // If non of the objects are not null
-                if(sparProducts != null && jokerProducts != null){
+                if (sparProducts != null && jokerProducts != null) {
 
                     // If both got one match
-                    if(sparProducts.length == 1 && jokerProducts.length == 1){
+                    if (sparProducts.length == 1 && jokerProducts.length == 1) {
 
                         // If it's the same item
-                        if(sparProducts[0].isMatchingItem(jokerProducts[0])){
+                        if (sparProducts[0].isMatchingItem(jokerProducts[0])) {
 
                             // Check if spar is cheaper
-                            if(sparProducts[0].isCheaperThan(jokerProducts[0])){
+                            if (sparProducts[0].isCheaperThan(jokerProducts[0])) {
                                 products = sparProducts;
                             } else {
                                 // else joker is cheaper
                                 products = jokerProducts;
                             }
 
-                            differance = String.format("\nDifferance: kr %s", sparProducts[0].getDifferenceInPrice(jokerProducts[0]));
+                            difference = String.format("\nDifference: kr %s", sparProducts[0].getDifferenceInPrice(jokerProducts[0]));
                         }
+                    } else if (sparProducts.length > 1 || jokerProducts.length > 1) {
+                        // TODO : make merged list from joker and spar here
+                        // TODO : and then, make it dynamic
+                        products = sparProducts;
                     }
                 }
             } else {
-               products = parseJSONtoProducts(stores[selectedItem], barcode);
+                products = parseJSONtoProducts(stores[selectedItem], barcode);
             }
 
             if (products != null) {
                 if (products.length == 1) {
-
-                    resultView.setText(String.format("%s%s", products[0].toString(), differance));
+                    resultView.setText(String.format("%s%s", products[0].toString(), difference));
                     imageView.setImageBitmap(products[0].getImageName());
                 } else if (products.length > 1) {
                     // Display list in ProductList activity
                     Intent intent = new Intent(MainActivity.this, ProductList.class);
                     Bundle bundle = new Bundle();
                     bundle.putInt("products_length", products.length);
+                    if (selectedItem == NUMBER_OF_STORES) {
+                        bundle.putBoolean("cheapest", true);
+                    } else {
+                        bundle.putBoolean("cheapest", false);
+                    }
 
                     for (int i = 0; i < products.length; i++) {
                         bundle.putParcelable("products" + i, products[i]);
@@ -200,6 +257,8 @@ public class MainActivity extends AppCompatActivity {
 
                 } else {
                     Toast.makeText(MainActivity.this, "Could not find any products", Toast.LENGTH_LONG).show();
+                    resultView.setText("");
+                    imageView.setImageDrawable(null);
                 }
 
             }
@@ -246,13 +305,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
-                case REQUEST_LOW_QUALITY_IMAGE:
-
-                    break;
                 case REQUEST_HIGH_QUALITY_IMAGE:
                     String barcode = getRawValueFromBarcode(getPicture());
-                    searchEntry.setText("");
-                    searchStoresForProducts(stores, barcode);
+                    if (!barcode.isEmpty()) {
+                        searchEntry.setText(barcode);
+                        imageView.setImageDrawable(null);
+                        searchStoresForProducts(stores, barcode);
+                    } else {
+                        Toast.makeText(getBaseContext(), "Could not get barcode!", Toast.LENGTH_LONG).show();
+                    }
+
                     break;
                 default:
                     break;
@@ -289,7 +351,7 @@ public class MainActivity extends AppCompatActivity {
             return barcodes.valueAt(0).rawValue;
         }
 
-        return "Could not read barcode :(";
+        return "";
     }
 
     private JSONObject getJsonObjectFromURL(URL url) throws IOException {
@@ -350,4 +412,8 @@ public class MainActivity extends AppCompatActivity {
         return new Product[0];
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

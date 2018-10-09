@@ -74,7 +74,7 @@ public class Product implements Parcelable {
 
     @Override
     public String toString() {
-        return String.format(Locale.getDefault(), "Store:  %s%nID:  %d%nName:  %s%nSubName:  %s%nCategory:  %s%nPrice:  %s%nPrice per compareUnit:  %s", store, id, title, subTitle, categoryName, getPriceFormatted(), getCompareUnitPriceWithUnit());
+        return String.format(Locale.getDefault(), "Store:  %s%n%s %s%n%s%n%s", store, title, subTitle, getPriceFormatted(), getCompareUnitPriceWithUnit());
     }
 
     public long getId() {

@@ -6,73 +6,71 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
+    android:backgroundTint="@android:color/white"
     tools:context=".MainActivity">
-
-    <ImageView
-        android:id="@+id/pictureView"
-        android:layout_width="208dp"
-        android:layout_height="208dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/baseline_image_search_24"
-        android:contentDescription="@string/image_of_product"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.046"
-        app:srcCompat="@android:color/transparent" />
 
     <EditText
         android:id="@+id/searchEntry"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="44dp"
-        android:layout_marginEnd="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@android:color/holo_blue_dark"
         android:ems="10"
+        android:focusableInTouchMode="true"
         android:hint="@string/search_for_product"
-        android:inputType="textPersonName"
+        android:imeOptions="actionSearch"
+        android:inputType="text|textCapSentences"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        android:text="5060166693732"
+        android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pictureView" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="Autofill" />
 
     <Spinner
         android:id="@+id/dropdownStores"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/searchButton"
+        android:spinnerMode="dropdown"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/searchEntry" />
 
-    <Button
-        android:id="@+id/searchButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:background="@color/colorAccent"
-        android:text="@string/search"
-        app:layout_constraintBottom_toTopOf="@+id/productDetails"
+    <ImageView
+        android:id="@+id/pictureView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="70dp"
+        android:layout_marginEnd="50dp"
+        android:clickable="true"
+        android:contentDescription="@string/image_of_product"
+        android:focusable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dropdownStores" />
+        app:layout_constraintTop_toBottomOf="@id/dropdownStores"
+        app:srcCompat="@android:color/transparent" />
+
 
     <TextView
         android:id="@+id/productDetails"
         android:layout_width="match_parent"
-        android:layout_height="135dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:paddingStart="30dp"
+        android:paddingEnd="0dp"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/pictureButton"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchButton"
-        android:paddingStart="80dp"
-        android:paddingEnd="20dp"
-        tools:text="Store:  Spar\nID:  2147483647\nName:  Monsetr Energy\nSubName:  0,5l boks\nCategory:  Drikke\nPrice:  kr 22.9 + 2.0\nPrice per compareUnit: kr45.8/l\nDifferance: kr 2.0" />
+        app:layout_constraintTop_toBottomOf="@id/pictureView"
+        tools:text="Store:  Spar\nMonster Energy 0,5l boks\nkr 22.9 + 2.0\nkr45.8/l\nDifferance: kr 2.0" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/pictureButton"
@@ -86,6 +84,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.966"
-        app:srcCompat="@android:drawable/ic_menu_camera" />
+        app:srcCompat="@drawable/baseline_camera_alt_white_48" />
+
 
 </android.support.constraint.ConstraintLayout>

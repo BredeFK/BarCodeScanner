@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 class ViewHolder {
     ImageView image;
@@ -21,14 +22,17 @@ class ViewHolder {
     TextView price;
     TextView pricePerUnit;
     Button link;
+    Button compare;
 }
 
 public class ProductAdapter extends ArrayAdapter<Product> {
     private Activity activity;
+    private boolean cheapestSelected;
 
-    ProductAdapter(Context context, int id) {
+    ProductAdapter(Context context, int id, boolean cheapestSelected) {
         super(context, id);
         this.activity = (Activity) context;
+        this.cheapestSelected = cheapestSelected;
     }
 
     @Override
@@ -55,17 +59,35 @@ public class ProductAdapter extends ArrayAdapter<Product> {
             holder.price = convertView.findViewById(R.id.product_price);
             holder.pricePerUnit = convertView.findViewById(R.id.product_price_pr_unit);
             holder.link = convertView.findViewById(R.id.product_link);
+            holder.compare = convertView.findViewById(R.id.compare);
             convertView.setTag(holder);
 
 
             holder.image.setImageBitmap(productRow.getImageName());
             holder.title.setText(productRow.getTitle());
             holder.subTitle.setText(productRow.getSubTitle());
-            System.out.println(productRow.getTitle() + ": " + productRow.getUnit());
             holder.price.setText(productRow.getPriceFormatted());
             holder.pricePerUnit.setText(productRow.getCompareUnitPriceWithUnit());
 
             final View finalView = convertView;
+
+            if(cheapestSelected){
+                holder.compare.setVisibility(View.VISIBLE);
+                holder.compare.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getContext(), MainActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("compareObject", productRow.getTitle() + " " + productRow.getSubTitle());
+                        intent.putExtras(bundle);
+                        finalView.getContext().startActivity(intent);
+                    }
+                });
+            } else{
+                holder.compare.setVisibility(View.GONE);
+                holder.compare.setOnClickListener(null);
+            }
+
             holder.link.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
