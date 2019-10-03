@@ -1,4 +1,5 @@
 # BarCodeScanner
+# OBS! This app doesn't work anymore as joker and spar have added extra security to their api :/
 
 ## Description
 The BarcodeScanner is an idea I have had since June 2018 when I found out that I could search for an item on Spar, Joker and Menys webpage with only the barcode.

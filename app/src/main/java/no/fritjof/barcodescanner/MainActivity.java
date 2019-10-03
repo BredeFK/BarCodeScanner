@@ -273,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 file = createImageFile();
             } catch (IOException e) {
-                e.getStackTrace();
+                System.out.println("Image error: " + e.getMessage());
             }
             if (file != null) {
                 Uri photoURI = FileProvider.getUriForFile(this,
@@ -378,36 +378,41 @@ public class MainActivity extends AppCompatActivity {
         try {
             URL url = new URL(store.getSearchURL() + searchItem);
             JSONObject jsonObject = getJsonObjectFromURL(url);
-            assert jsonObject != null;
-            JSONArray param = jsonObject.getJSONArray("products");
 
-            Product[] products = new Product[param.length()];
-            for (int i = 0; i < products.length; i++) {
-                JSONObject object = param.getJSONObject(i);
-                products[i] = new Product();
+            // Only proceed if jsonObject isn't null
+            if (jsonObject != null) {
+                JSONArray param = jsonObject.getJSONArray("products");
 
-                float pricePrUnit = (!object.get("comparepriceperunit").equals(null)) ? (float) object.getDouble("comparepriceperunit") : 0;
-                String compareUnit = (!object.get("compareunit").equals(null)) ? object.getString("compareunit") : "";
+                Product[] products = new Product[param.length()];
+                for (int i = 0; i < products.length; i++) {
+                    JSONObject object = param.getJSONObject(i);
+                    products[i] = new Product();
 
-                products[i].setStore(store.getName());
-                products[i].setId(object.getInt("id"));
-                products[i].setTitle(object.getString("title"));
-                products[i].setSubTitle(object.getString("subtitle"));
-                products[i].setCategoryName(object.getString("categoryname"));
-                products[i].setPrice((float) object.getDouble("price"));
-                products[i].setComparePricePerUnit(pricePrUnit);
-                products[i].setCompareUnit(compareUnit);
-                products[i].setPricePerUnit((float) object.getDouble("priceperunit"));
-                products[i].setOffer(object.getBoolean("isoffer"));
-                products[i].setUnit(object.getString("unit"));
-                products[i].setRecycleValue((float) object.getDouble("recycleValue"));
-                products[i].setImageName(store.getImageURL() + object.getString("imagename"));
-                products[i].setUrl(store.getItemURL() + object.getString("slugifiedurl"));
+                    float pricePrUnit = (!object.get("comparepriceperunit").equals(null)) ? (float) object.getDouble("comparepriceperunit") : 0;
+                    String compareUnit = (!object.get("compareunit").equals(null)) ? object.getString("compareunit") : "";
+
+                    products[i].setStore(store.getName());
+                    products[i].setId(object.getInt("id"));
+                    products[i].setTitle(object.getString("title"));
+                    products[i].setSubTitle(object.getString("subtitle"));
+                    products[i].setCategoryName(object.getString("categoryname"));
+                    products[i].setPrice((float) object.getDouble("price"));
+                    products[i].setComparePricePerUnit(pricePrUnit);
+                    products[i].setCompareUnit(compareUnit);
+                    products[i].setPricePerUnit((float) object.getDouble("priceperunit"));
+                    products[i].setOffer(object.getBoolean("isoffer"));
+                    products[i].setUnit(object.getString("unit"));
+                    products[i].setRecycleValue((float) object.getDouble("recycleValue"));
+                    products[i].setImageName(store.getImageURL() + object.getString("imagename"));
+                    products[i].setUrl(store.getItemURL() + object.getString("slugifiedurl"));
+                }
+
+                return products;
+            } else {
+                System.out.println("Error: jsonObject is null");
             }
-
-            return products;
         } catch (IOException | JSONException e) {
-            e.printStackTrace();
+            System.out.println("JSON error: " + e.getMessage());
         }
         return new Product[0];
     }
