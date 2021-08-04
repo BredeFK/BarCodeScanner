@@ -23,9 +23,10 @@
         android:paddingTop="10dp"
         android:paddingEnd="10dp"
         android:paddingBottom="10dp"
-        android:text="5060166693732"
-        android:textColor="@android:color/white"
+        android:text="@string/Monster_barcode"
+        android:textColor="#212121"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="Autofill" />
@@ -34,10 +35,12 @@
         android:id="@+id/dropdownStores"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minHeight="48dp"
         android:spinnerMode="dropdown"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/searchEntry" />
+        app:layout_constraintTop_toBottomOf="@id/searchEntry"
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <ImageView
         android:id="@+id/pictureView"
@@ -84,7 +87,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.966"
-        app:srcCompat="@drawable/baseline_camera_alt_white_48" />
+        app:srcCompat="@drawable/baseline_camera_alt_white_48"
+        tools:ignore="SpeakableTextPresentCheck"
+        android:contentDescription="@string/todo" />
 
 
 </android.support.constraint.ConstraintLayout>

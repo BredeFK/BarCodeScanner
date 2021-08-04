@@ -18,7 +18,8 @@
         android:contentDescription="@string/image_of_product"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ImageContrastCheck" />
 
     <TextView
         android:id="@+id/product_title"
@@ -39,11 +40,9 @@
         android:id="@+id/product_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="0dp"
         android:ems="11"
-        android:layout_marginTop="0dp"
         android:maxLines="1"
-        android:textColor="@android:color/darker_gray"
+        android:textColor="#757575"
         android:textSize="14sp"
         app:layout_constraintStart_toEndOf="@id/product_image"
         app:layout_constraintTop_toBottomOf="@id/product_title"
@@ -68,11 +67,9 @@
         android:id="@+id/product_price_pr_unit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="0dp"
         android:maxLines="1"
         android:textAlignment="viewStart"
-        android:textColor="@android:color/darker_gray"
+        android:textColor="#757575"
         android:textSize="14sp"
         app:layout_constraintStart_toEndOf="@id/product_image"
         app:layout_constraintTop_toBottomOf="@id/product_price"
@@ -81,13 +78,12 @@
     <Button
         android:id="@+id/product_link"
         android:layout_width="70dp"
-        android:layout_height="40dp"
+        android:layout_height="48dp"
         android:layout_marginEnd="10dp"
         android:background="@color/colorPrimary"
         android:text="@string/website"
         android:textColor="@android:color/white"
         android:textSize="12sp"
-        android:layout_marginTop="0dp"
         app:layout_constraintBottom_toTopOf="@id/compare"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

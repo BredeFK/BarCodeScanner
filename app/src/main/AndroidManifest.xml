@@ -8,7 +8,7 @@
 
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="18" />
+        android:maxSdkVersion="31" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -23,7 +23,8 @@
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
             android:value="barcode" />
         <!-- To use multiple models: android:value="barcode,model2,model3" -->
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,7 +32,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ProductList" />
-        <activity android:name=".StorePageActivity"></activity>
+        <activity android:name=".StorePageActivity" />
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="no.fritjof.android.fileprovider"
@@ -39,7 +40,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
     </application>
 

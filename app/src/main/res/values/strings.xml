@@ -1,12 +1,14 @@
 <resources>
     <string name="app_name">BarcodeScanner</string>
-    <string name="image_of_product">Image of product...</string>
+    <string name="image_of_product">Image of product…</string>
     <string name="link_to_website">Link to website</string>
     <string name="website">Website</string>
     <string name="search_for_product">Search for product</string>
     <string name="search">Search</string>
     <string name="cheapest">Cheapest</string>
     <string name="compare">Compare</string>
+    <string name="Monster_barcode">5060166693732</string>
+    <string name="todo">TODO</string>
     <string-array name="stores_array">
         <item>Spar</item>
         <item>Joker</item>
