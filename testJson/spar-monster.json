@@ -1,0 +1,184 @@
+{
+  "products": {
+    "took": 5,
+    "timed_out": false,
+    "_shards": {
+      "total": 1,
+      "successful": 1,
+      "failed": 0
+    },
+    "hits": {
+      "total": 1,
+      "max_score": 9.85487,
+      "hits": [
+        {
+          "contentType": "product",
+          "title": "Monster",
+          "description": "Pacific Punch 0,5l boks",
+          "contentId": "5060639126200",
+          "imageId": "v1619050811/Product/5060639126200.jpg",
+          "contentData": {
+            "_index": "ng_products_1210_04.08.2021_12:22:44",
+            "_type": "product",
+            "_id": "5060639126200_7080001097950_1210",
+            "_score": 9.85487,
+            "_source": {
+              "unitWeight": null,
+              "shoppingListGroupName": "Energidrikk",
+              "title": "Monster",
+              "categoryName": "Drikke",
+              "calcUnit": "stk",
+              "pricePerUnit": 23.9,
+              "unitType": "Stykk",
+              "ageLimit": 14,
+              "recycleValue": 2,
+              "ean": "5060639126200",
+              "vendor": "Coca-cola european partners norge as",
+              "comparePricePerUnit": 47.8,
+              "brand": "Monster",
+              "isForSale": true,
+              "productByWeightSoldAsItem": false,
+              "containsAlcohol": false,
+              "imageName": "v1619050811/Product/5060639126200.jpg",
+              "calcUnitType": "Stykk",
+              "compareUnit": "l",
+              "calcPricePerUnit": 23.9,
+              "isOffer": false,
+              "weight": 0.5,
+              "isNew": false,
+              "environmentalCodes": [
+                {
+                  "displayName": "e_merket",
+                  "name": "e_merket"
+                }
+              ],
+              "slugifiedUrl": "/drikke/energidrikk/monster-5060639126200",
+              "unitRule": 1,
+              "productSoldByWeight": false,
+              "imageGtin": "5060639126200",
+              "isLocal": false,
+              "isOutOfStock": true,
+              "unitRules": 1,
+              "unit": "stk",
+              "epdNumber": 5585914,
+              "promotions": [],
+              "pricePerUnitOriginal": 23.9,
+              "subtitle": "Pacific Punch 0,5l boks",
+              "mustOrderFromSupplier": false,
+              "usesPromotionPrice": false,
+              "promotionDisplayName": "",
+              "promotionId": null,
+              "coupon": null
+            },
+            "sort": [
+              9.85487,
+              441
+            ]
+          }
+        }
+      ]
+    },
+    "aggregations": {
+      "Allergens": {
+        "doc_count_error_upper_bound": 0,
+        "sum_other_doc_count": 0,
+        "buckets": []
+      },
+      "Categories": {
+        "doc_count_error_upper_bound": 0,
+        "sum_other_doc_count": 0,
+        "buckets": [
+          {
+            "key": "Drikke",
+            "doc_count": 1
+          }
+        ]
+      },
+      "IsBargain": {
+        "doc_count_error_upper_bound": 0,
+        "sum_other_doc_count": 0,
+        "buckets": [
+          {
+            "key": 0,
+            "key_as_string": "false",
+            "doc_count": 1
+          }
+        ]
+      },
+      "AssortmentCode": {
+        "doc_count_error_upper_bound": 0,
+        "sum_other_doc_count": 0,
+        "buckets": [
+          {
+            "key": "31",
+            "doc_count": 1
+          }
+        ]
+      },
+      "IsOffer": {
+        "doc_count_error_upper_bound": 0,
+        "sum_other_doc_count": 0,
+        "buckets": [
+          {
+            "key": 0,
+            "key_as_string": "false",
+            "doc_count": 1
+          }
+        ]
+      }
+    },
+    "suggest": {
+      "simple_phrase": [
+        {
+          "text": "5060639126200",
+          "offset": 0,
+          "length": 13,
+          "options": []
+        }
+      ]
+    },
+    "searchType": "normal"
+  },
+  "articles": {
+    "took": 1,
+    "timed_out": false,
+    "_shards": {
+      "total": 1,
+      "successful": 1,
+      "failed": 0
+    },
+    "hits": {
+      "total": 0,
+      "max_score": null,
+      "hits": []
+    }
+  },
+  "recipes": {
+    "took": 2,
+    "timed_out": false,
+    "_shards": {
+      "total": 1,
+      "successful": 1,
+      "failed": 0
+    },
+    "hits": {
+      "total": 0,
+      "max_score": null,
+      "hits": []
+    }
+  },
+  "stores": {
+    "took": 2,
+    "timed_out": false,
+    "_shards": {
+      "total": 1,
+      "successful": 1,
+      "failed": 0
+    },
+    "hits": {
+      "total": 0,
+      "max_score": null,
+      "hits": []
+    }
+  }
+}

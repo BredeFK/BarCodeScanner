@@ -40,11 +40,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_HIGH_QUALITY_IMAGE = 1;
@@ -54,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView resultView;
     private EditText searchEntry;
     private FloatingActionButton actionButton;
-    private Store[] stores;
+    private final ArrayList<Store> stores = new ArrayList<>();
     private String currentPhotoPath;
     private Spinner dropDownStores;
     private ConstraintLayout mainLayout;
@@ -72,22 +74,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getStores() {
-        stores = new Store[NUMBER_OF_STORES];
 
         // Create new store: Spar
-        stores[0] = new Store("Spar");
-        stores[0].setImageURL("https://res.cloudinary.com/norgesgruppen/image/upload/b_white,c_pad,f_auto,h_400,q_50,w_400/");
-        stores[0].setSearchURL("https://nettbutikk.spar.no/api/products/search?numberofhitsfortype=products&numberofhitsfortype=recipes&page=1&perpage=20&query=");
-        stores[0].setItemURL("https://spar.no/nettbutikk");
+        Store spar = new Store("Spar");
+        spar.setImageURL("https://res.cloudinary.com/norgesgruppen/image/upload/b_white,c_pad,f_auto,h_400,q_50,w_400/");
+        spar.setSearchURL("https://nettbutikk.spar.no/api/products/search?numberofhitsfortype=products&numberofhitsfortype=recipes&page=1&perpage=20&query=");
+        spar.setItemURL("https://spar.no/nettbutikk");
 
         // Create new store: Joker
-        stores[1] = new Store("Joker");
-        stores[1].setImageURL("https://res.cloudinary.com/norgesgruppen/image/upload/b_white,c_pad,f_auto,h_400,q_50,w_400/");
-        stores[1].setSearchURL("https://nettbutikk.joker.no/api/products/search?numberofhitsfortype=products&numberofhitsfortype=recipes&page=1&perpage=20&query=");
-        stores[1].setItemURL("https://joker.no/nettbutikk");
+        Store joker = new Store("Joker");
+        joker.setImageURL("https://res.cloudinary.com/norgesgruppen/image/upload/b_white,c_pad,f_auto,h_400,q_50,w_400/");
+        joker.setSearchURL("https://nettbutikk.joker.no/api/products/search?numberofhitsfortype=products&numberofhitsfortype=recipes&page=1&perpage=20&query=");
+        joker.setItemURL("https://joker.no/nettbutikk");
 
         // Create new store: Meny
+        Store meny = new Store("Meny");
+        meny.setImageURL("");
+        meny.setSearchURL("");
+        meny.setItemURL("");
 
+        stores.add(spar);
+        //stores.add(joker);
+        //stores.add(meny);
     }
 
     private void getComponents() {
@@ -160,14 +168,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        ArrayList<String> array = new ArrayList<>();
-        for (int i = 0; i < NUMBER_OF_STORES; i++) {
-            array.add(stores[i].getName());
-        }
+        ArrayList<String> names = new ArrayList<>();
+        for (Store store : stores)
+            names.add(store.getName());
 
-        array.add(getString(R.string.cheapest));
+        names.add(getString(R.string.cheapest));
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, array);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, names);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dropDownStores.setAdapter(adapter);
 
@@ -192,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
     }
 
-    private void searchStoresForProducts(Store[] stores, String barcode) {
+    private void searchStoresForProducts(ArrayList<Store> stores, String barcode) {
         if (!barcode.isEmpty()) {
 
             Product[] products = null;
@@ -201,11 +208,11 @@ public class MainActivity extends AppCompatActivity {
             // If Cheapest is chosen (Highest in stores array is NUMBER_OF_STORES - 1)
             if (selectedItem == NUMBER_OF_STORES) {
                 // TODO : make this dynamic
-                Product[] sparProducts = parseJSONtoProducts(stores[0], barcode);
-                Product[] jokerProducts = parseJSONtoProducts(stores[1], barcode);
+                Product[] sparProducts = parseJSONtoProducts(stores.get(0), barcode);
+                Product[] jokerProducts = parseJSONtoProducts(stores.get(1), barcode);
 
                 // If non of the objects are not null
-                if (sparProducts != null && jokerProducts != null) {
+                if (sparProducts != null) {
 
                     // If both got one match
                     if (sparProducts.length == 1 && jokerProducts.length == 1) {
@@ -230,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             } else {
-                products = parseJSONtoProducts(stores[selectedItem], barcode);
+                products = parseJSONtoProducts(stores.get(selectedItem), barcode);
             }
 
             if (products != null) {
@@ -242,11 +249,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(MainActivity.this, ProductList.class);
                     Bundle bundle = new Bundle();
                     bundle.putInt("products_length", products.length);
-                    if (selectedItem == NUMBER_OF_STORES) {
-                        bundle.putBoolean("cheapest", true);
-                    } else {
-                        bundle.putBoolean("cheapest", false);
-                    }
+                    bundle.putBoolean("cheapest", selectedItem == NUMBER_OF_STORES);
 
                     for (int i = 0; i < products.length; i++) {
                         bundle.putParcelable("products" + i, products[i]);
@@ -304,20 +307,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case REQUEST_HIGH_QUALITY_IMAGE:
-                    String barcode = getRawValueFromBarcode(getPicture());
-                    if (!barcode.isEmpty()) {
-                        searchEntry.setText(barcode);
-                        imageView.setImageDrawable(null);
-                        searchStoresForProducts(stores, barcode);
-                    } else {
-                        Toast.makeText(getBaseContext(), "Could not get barcode!", Toast.LENGTH_LONG).show();
-                    }
-
-                    break;
-                default:
-                    break;
+            if (requestCode == REQUEST_HIGH_QUALITY_IMAGE) {
+                String barcode = getRawValueFromBarcode(getPicture());
+                if (!barcode.isEmpty()) {
+                    searchEntry.setText(barcode);
+                    imageView.setImageDrawable(null);
+                    searchStoresForProducts(stores, barcode);
+                } else {
+                    Toast.makeText(getBaseContext(), "Could not get barcode!", Toast.LENGTH_LONG).show();
+                }
             }
         }
 
@@ -355,19 +353,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private JSONObject getJsonObjectFromURL(URL url) throws IOException {
-        InputStream is = url.openStream();
-        StringBuilder sb = new StringBuilder();
-        int cp;
-        try (BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")))) {
-            while ((cp = rd.read()) != -1) {
-                sb.append((char) cp);
+        /* TODO : Use these
+        Map<String, String> parameters = new HashMap<>();
+        Map<String, String> headers = new HashMap<>();
+        parameters.put("types", "");
+        parameters.put("search", "");
+        parameters.put("page_size", "");
+        parameters.put("suggest", "");
+        parameters.put("full_response", "");
+        parameters.put("popularity", "");
+        parameters.put("showNotForSale", "");
+
+        headers.put("Accept", "");
+        headers.put("Accept-Encoding", "");
+        headers.put("Accept-Language", "");
+        headers.put("Content-Type", "");
+        headers.put("Host", "");
+        headers.put("User-Agent", "");
+        headers.put("x-csrf-token", "");
+         */
+
+        try (InputStream is = url.openStream()) {
+            try (BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+                StringBuilder sb = new StringBuilder();
+                int cp;
+                while ((cp = rd.read()) != -1) {
+                    sb.append((char) cp);
+                }
+                String jsonText = sb.toString();
+                return new JSONObject(jsonText);
             }
-            String jsonText = sb.toString();
-            return new JSONObject(jsonText);
         } catch (JSONException e) {
             e.printStackTrace();
-        } finally {
-            is.close();
         }
         return null;
     }
@@ -388,8 +405,10 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject object = param.getJSONObject(i);
                     products[i] = new Product();
 
-                    float pricePrUnit = (!object.get("comparepriceperunit").equals(null)) ? (float) object.getDouble("comparepriceperunit") : 0;
-                    String compareUnit = (!object.get("compareunit").equals(null)) ? object.getString("compareunit") : "";
+                    object.get("comparepriceperunit");
+                    float pricePrUnit = (float) object.getDouble("comparepriceperunit");
+                    object.get("compareunit");
+                    String compareUnit = object.getString("compareunit");
 
                     products[i].setStore(store.getName());
                     products[i].setId(object.getInt("id"));
